@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Professor Bingo — Lecture Demon Hunt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Oswald:wght@500;600;700&family=Roboto+Condensed:wght@500;700&family=Kaushan+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- ============ SCENE ============ -->
+<div class="sky" aria-hidden="true">
+  <div class="stars"></div>
+  <div class="moon"></div>
+  <svg class="land" id="land" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice"></svg>
+  <svg class="wisteria l" id="wisL" viewBox="0 0 240 340"></svg>
+  <svg class="wisteria r" id="wisR" viewBox="0 0 240 340"></svg>
+  <svg class="clouds l" viewBox="0 0 340 160"><use href="#goldcloud"/></svg>
+  <svg class="clouds r" viewBox="0 0 340 160"><use href="#goldcloud"/></svg>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1c2"/><stop offset=".5" stop-color="#e6b04a"/><stop offset="1" stop-color="#9a6418"/></linearGradient>
+    <symbol id="goldcloud" viewBox="0 0 340 160">
+      <g fill="url(#gGold)" stroke="#6b3f0e" stroke-width="3">
+        <path d="M10 150 C10 110 50 95 80 112 C85 70 140 60 160 95 C175 55 240 52 250 98 C275 80 330 95 325 150 Z"/>
+        <path d="M60 150 C62 128 92 120 110 134 C120 112 160 110 168 136 C182 122 214 128 214 150 Z" opacity=".9"/>
+      </g>
+      <g fill="none" stroke="#6b3f0e" stroke-width="3" stroke-linecap="round">
+        <path d="M112 112 a14 14 0 1 1 18 12 a8 8 0 1 1 -6 -12"/><path d="M200 96 a14 14 0 1 1 18 12 a8 8 0 1 1 -6 -12"/><path d="M272 118 a11 11 0 1 1 14 9 a6 6 0 1 1 -5 -9"/>
+      </g>
+    </symbol>
+    <symbol id="sakura" viewBox="-10 -10 20 20">
+      <g fill="#e8324a" stroke="#ffd27a" stroke-width=".7"><ellipse rx="3.2" ry="5.2" cy="-4.6"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(72)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(144)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(216)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(288)"/></g>
+      <circle r="2" fill="#ffd27a"/>
+    </symbol>
+    <symbol id="sakuraGold" viewBox="-10 -10 20 20">
+      <g fill="#ffd27a" stroke="#7a4e14" stroke-width=".7"><ellipse rx="3.2" ry="5.2" cy="-4.6"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(72)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(144)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(216)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(288)"/></g>
+      <circle r="2" fill="#c8102e"/>
+    </symbol>
+    <!-- Sacred Hunter Emblems -->
+    <symbol id="emblem-wave" viewBox="0 0 24 24">
+      <path d="M2 15c3-4 6-4 9 0s6 4 9 0M2 10c3-4 6-4 9 0s6 4 9 0" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="emblem-flame" viewBox="0 0 24 24">
+      <path d="M12 2c0 4-4 6-4 10a6 6 0 0 0 12 0c0-3-2-5-4-7a9 9 0 0 1-4-3z" fill="currentColor"/>
+    </symbol>
+    <symbol id="emblem-moon" viewBox="0 0 24 24">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"/>
+    </symbol>
+    <symbol id="emblem-sakura" viewBox="-10 -10 20 20">
+      <g fill="currentColor"><ellipse rx="3.2" ry="5.2" cy="-4.6"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(72)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(144)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(216)"/><ellipse rx="3.2" ry="5.2" cy="-4.6" transform="rotate(288)"/></g><circle r="1.8" fill="#ffd27a"/>
+    </symbol>
+  </defs>
+</svg>
+<canvas id="amb" aria-hidden="true"></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<!-- ============ HUNTER LOGIN SCREEN ============ -->
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="login-card">
+    <div class="k" aria-hidden="true">鬼</div>
+    <h2 id="loginTitle">ENTER THE HUNT</h2>
+    <p class="login-sub">Every professor cliché is a demon. Select an existing hunter or create a new profile.</p>
+    
+    <!-- Multi-Login Navigation Tabs -->
+    <div class="login-nav-tabs" role="tablist" aria-label="Login Methods">
+      <button type="button" class="login-nav-tab active" data-tab="accounts" id="tabAccounts">
+        <svg class="emblem-svg sm"><use href="#emblem-wave"/></svg>
+        <span>Accounts</span>
+      </button>
+      <button type="button" class="login-nav-tab" data-tab="legends" id="tabLegends">
+        <svg class="emblem-svg sm"><use href="#emblem-flame"/></svg>
+        <span>Demon Slayers</span>
+      </button>
+      <button type="button" class="login-nav-tab" data-tab="student" id="tabStudent">
+        <svg class="emblem-svg sm"><use href="#emblem-sakura"/></svg>
+        <span>Student ID</span>
+      </button>
+    </div>
+
+    <!-- PANEL 1: SAVED PROFILES & CUSTOM HUNTER -->
+    <div class="login-panel active" id="panelAccounts">
+      <!-- Saved Profiles Roster -->
+      <div class="saved-hunters-wrap" id="savedHuntersWrap">
+        <div class="saved-hunters-head">
+          <span>Active Hunter Profiles</span>
+          <button type="button" class="new-hunter-btn" id="newHunterToggleBtn">+ Create New</button>
+        </div>
+        <div class="saved-hunters-list" id="savedHuntersList" role="list"></div>
+      </div>
+
+      <!-- Create New Hunter Form -->
+      <div class="login-form" id="customHunterForm">
+        <div class="login-group">
+          <label for="hunterNameInput">Hunter Name</label>
+          <input type="text" id="hunterNameInput" maxlength="16" placeholder="Enter 2-16 characters..." autocomplete="off" spellcheck="false">
+          <p class="login-err" id="nameError" role="alert"></p>
+        </div>
+
+        <div class="login-group">
+          <label>Sacred Emblem</label>
+          <div class="emblem-picker" id="emblemPicker" role="radiogroup" aria-label="Choose Sacred Emblem">
+            <button type="button" class="emblem-btn active" data-emblem="wave" title="Water Wave">
+              <svg class="emblem-svg"><use href="#emblem-wave"/></svg>
+              <span>Wave</span>
+            </button>
+            <button type="button" class="emblem-btn" data-emblem="flame" title="Demon Flame">
+              <svg class="emblem-svg"><use href="#emblem-flame"/></svg>
+              <span>Flame</span>
+            </button>
+            <button type="button" class="emblem-btn" data-emblem="moon" title="Pale Moon">
+              <svg class="emblem-svg"><use href="#emblem-moon"/></svg>
+              <span>Moon</span>
+            </button>
+            <button type="button" class="emblem-btn" data-emblem="sakura" title="Crimson Sakura">
+              <svg class="emblem-svg"><use href="#emblem-sakura"/></svg>
+              <span>Sakura</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-actions">
+          <button type="button" class="btn red" id="startBtn" disabled>
+            <svg class="fl"><use href="#sakuraGold"/></svg> Begin the hunt
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 2: DEMON SLAYER CORPS (One-Click Instant Logins) -->
+    <div class="login-panel" id="panelLegends">
+      <p class="panel-desc">Quick 1-click login as legendary Demon Slayers with preloaded ranks and elemental breathing styles.</p>
+      <div class="legends-grid" id="legendsGrid">
+        <button type="button" class="legend-card" data-legend="tanjiro">
+          <div class="legend-header">
+            <svg class="emblem-svg"><use href="#emblem-wave"/></svg>
+            <div class="legend-title-box">
+              <span class="legend-name">Tanjiro Kamado</span>
+              <span class="legend-sub">Water &amp; Sun Breathing</span>
+            </div>
+          </div>
+          <div class="legend-stats">
+            <span class="legend-pill">Demon Slayer</span>
+            <span class="legend-xp">480 XP · 3 Bingos</span>
+          </div>
+        </button>
+
+        <button type="button" class="legend-card" data-legend="zenitsu">
+          <div class="legend-header">
+            <svg class="emblem-svg"><use href="#emblem-flame"/></svg>
+            <div class="legend-title-box">
+              <span class="legend-name">Zenitsu Agatsuma</span>
+              <span class="legend-sub">Thunderclap and Flash</span>
+            </div>
+          </div>
+          <div class="legend-stats">
+            <span class="legend-pill">Lantern Scout</span>
+            <span class="legend-xp">320 XP · 2 Bingos</span>
+          </div>
+        </button>
+
+        <button type="button" class="legend-card" data-legend="inosuke">
+          <div class="legend-header">
+            <svg class="emblem-svg"><use href="#emblem-moon"/></svg>
+            <div class="legend-title-box">
+              <span class="legend-name">Inosuke Hashibira</span>
+              <span class="legend-sub">Beast Breathing Fang</span>
+            </div>
+          </div>
+          <div class="legend-stats">
+            <span class="legend-pill">Blade Initiate</span>
+            <span class="legend-xp">290 XP · 2 Bingos</span>
+          </div>
+        </button>
+
+        <button type="button" class="legend-card" data-legend="nezuko">
+          <div class="legend-header">
+            <svg class="emblem-svg"><use href="#emblem-sakura"/></svg>
+            <div class="legend-title-box">
+              <span class="legend-name">Nezuko Kamado</span>
+              <span class="legend-sub">Blood Demon Art</span>
+            </div>
+          </div>
+          <div class="legend-stats">
+            <span class="legend-pill">Wisteria Warden</span>
+            <span class="legend-xp">560 XP · 4 Bingos</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- PANEL 3: STUDENT ID / CLASSROOM LOGIN -->
+    <div class="login-panel" id="panelStudent">
+      <p class="panel-desc">Classroom hunter verification. Enter your university roll ID to track your lecture stats.</p>
+      <div class="login-form">
+        <div class="login-group">
+          <label for="studentRollInput">Student Roll / ID</label>
+          <input type="text" id="studentRollInput" maxlength="16" placeholder="e.g. CS-2024-042 or Roll 42..." autocomplete="off" spellcheck="false">
+          <p class="login-err" id="studentRollErr" role="alert"></p>
+        </div>
+        <div class="login-group">
+          <label for="studentSectionSelect">Lecture Section</label>
+          <select id="studentSectionSelect" class="student-select">
+            <option value="Any lecture">General Lecture Hall</option>
+            <option value="Online class">Virtual Class Stream</option>
+            <option value="CS / Engineering">CS / Engineering Hall</option>
+          </select>
+        </div>
+        <div class="login-actions">
+          <button type="button" class="btn red" id="studentLoginBtn">
+            <svg class="fl"><use href="#sakuraGold"/></svg> Enter as Student Hunter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOBAL GUEST PLAY BUTTON -->
+    <div class="login-footer-actions">
+      <button type="button" class="btn text-btn" id="guestBtn">
+        Play as guest
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="wrap" id="app">
+  <div class="main">
+    <!-- LEFT COLUMN: Character stage (300px) -->
+    <div id="stageLeft" class="stage-left" aria-hidden="true"></div>
+
+    <!-- CENTER COLUMN: Bingo Board & Controls -->
+    <section class="center-col">
+      <div class="titlebar">
+        <div class="brand">
+          <div class="seal" aria-hidden="true">鬼</div>
+          <div>
+            <h1>PROFESSOR BINGO</h1>
+            <small>Lecture Demon Hunt</small>
+          </div>
+        </div>
+
+        <!-- Hunter Profile Badge in Titlebar -->
+        <div class="hunter-profile" id="hunterProfile">
+          <div class="hunter-emblem-wrap">
+            <svg class="emblem-svg" id="hunterProfileEmblem"><use href="#emblem-wave"/></svg>
+          </div>
+          <div class="hunter-meta">
+            <b id="hunterNameDisplay">Guest Hunter</b>
+            <button type="button" class="switch-hunter-btn" id="switchHunterBtn">Switch hunter</button>
+          </div>
+        </div>
+
+        <div class="titleright">
+          <div class="rankpill" aria-live="polite"><div class="top"><b id="rankName">Ink Novice</b><span id="rankXp">0 / 100 XP</span></div><div class="xpbar"><i id="xpBar"></i></div></div>
+          <button class="switch" id="quietBtn" role="switch" aria-checked="false" title="Shortcut: Q"><span class="knob" aria-hidden="true"></span>Quiet Classroom Mode</button>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="boardinfo"><span>Scroll <b id="cardId">#----</b> · <span id="deckName"></span></span><span class="combo" id="combo">x2 combo</span><span id="status"><b>0</b> / 25 slain</span></div>
+        <div class="grid" id="grid" role="grid" aria-label="5 by 5 bingo grid"></div>
+        <div class="actions">
+          <button class="btn red" id="newCardBtn" title="Shortcut: N"><svg class="fl"><use href="#sakuraGold"/></svg> Generate fresh card</button>
+          <button class="btn" id="undoBtn" title="Shortcut: Z" disabled>↶ Undo</button>
+          <button class="btn" id="clearBtn">Clear ticks</button>
+        </div>
+        <div class="center-footer-bar">
+          Running entirely in your browser with sample phrases — no login server, nothing leaves this page.
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN (350px): Tabs + Customize Scroll + Hunt Log Scroll -->
+    <aside class="side right-col">
+      <div class="tabs">
+        <div class="tab"><b id="sLines">0</b><span>Lines now</span></div>
+        <div class="tab"><b id="sWins">0</b><span>Bingos</span></div>
+        <div class="tab"><b id="sCards">1</b><span>Cards</span></div>
+        <button type="button" class="tab tab-score" id="openScoreboardBtn" title="View Hall of Hunters">
+          <b class="score-icon">🏆</b><span>SCOREBOARD</span>
+        </button>
+      </div>
+
+      <div class="scroll">
+        <h2><svg class="fl"><use href="#sakura"/></svg> CUSTOMIZE CARD</h2>
+        <label class="small" for="preset">DEMON DECK</label>
+        <select id="preset"></select>
+        <label class="small" for="phrases">PHRASES — ONE PER LINE</label>
+        <textarea id="phrases" spellcheck="false"></textarea>
+        <p class="hint" id="count"></p>
+        <p class="err" id="err" role="alert"></p>
+        <div class="opts" role="radiogroup" aria-label="Lines needed to win">
+          <label><input type="radio" name="target" value="1" checked> 1 line</label>
+          <label><input type="radio" name="target" value="2"> 2 lines</label>
+          <label><input type="radio" name="target" value="3"> 3 lines</label>
+        </div>
+        <div class="opts"><label><input type="checkbox" id="freeChk" checked> Free space in the center</label></div>
+        <div class="row">
+          <button class="btn red" id="applyBtn">Apply &amp; save card</button>
+          <button class="btn" id="resetDeckBtn">Reset deck</button>
+        </div>
+      </div>
+
+      <div class="scroll">
+        <h2><svg class="fl"><use href="#sakura"/></svg> HUNT LOG</h2>
+        <ul class="log" id="log"></ul>
+      </div>
+
+      <!-- RIGHT STAGE: Yuki (Lantern Spirit) -->
+      <div id="stageRight" class="stage-right" aria-hidden="true"></div>
+    </aside>
+  </div>
+</div>
+
+<!-- Small gold-framed badge at bottom-right -->
+<div class="badge-fixed" aria-hidden="true">
+  <svg class="fl" width="16" height="16"><use href="#sakuraGold"/></svg> Moonlit Hunt Theme
+</div>
+
+<!-- ============ BINGO WIN MODAL ============ -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="modal" id="modal">
+    <!-- Corner flower ornaments -->
+    <svg class="corner tl"><use href="#sakuraGold"/></svg>
+    <svg class="corner tr"><use href="#sakuraGold"/></svg>
+    <svg class="corner bl"><use href="#sakuraGold"/></svg>
+    <svg class="corner br"><use href="#sakuraGold"/></svg>
+    <!-- Gold swirl clouds peeking out at bottom corners -->
+    <svg class="modal-cloud bl"><use href="#goldcloud"/></svg>
+    <svg class="modal-cloud br"><use href="#goldcloud"/></svg>
+
+    <div class="modal-layout">
+      <!-- Empty slot on left (170px) -->
+      <div id="modalLeft" class="modal-slot left" aria-hidden="true"></div>
+
+      <!-- Center content -->
+      <div class="inner modal-center">
+        <p class="bingo-word" id="winTitle">BINGO!</p>
+        <div class="subhead" id="winLine">⟡━ BINGO 2 COMPLETE ━⟡</div>
+        <span class="ribbon" id="winRibbon">+2 LINES</span>
+        <p class="legend">A LEGENDARY TEACHER MOMENT!</p>
+        <p class="rankup" id="rankUp"></p>
+        <ul class="ach" id="ach"></ul>
+        <p class="slain" id="slain"></p>
+        <div class="row modal-btns">
+          <button class="btn gold-btn" id="modalScoreBtn"><b style="margin-right:4px;">🏆</b> Scoreboard</button>
+          <button class="btn" id="keepBtn">Play Again</button>
+          <button class="btn red" id="modalNewBtn">New Card</button>
+        </div>
+      </div>
+
+      <!-- Empty slot on right (170px) -->
+      <div id="modalRight" class="modal-slot right" aria-hidden="true"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCOREBOARD OVERLAY ============ -->
+<div class="overlay scoreboard-overlay" id="scoreboardOverlay" role="dialog" aria-modal="true" aria-labelledby="scoreTitle">
+  <div class="score-modal">
+    <div class="score-scroll">
+      <div class="score-header">
+        <div class="score-title-wrap">
+          <div class="seal sm" aria-hidden="true">鬼</div>
+          <h2 id="scoreTitle">HALL OF HUNTERS</h2>
+        </div>
+        <button type="button" class="btn-close" id="closeScoreboardBtn" aria-label="Close scoreboard">✕</button>
+      </div>
+
+      <!-- Scoreboard Filter Tabs & Reset -->
+      <div class="score-filter-row">
+        <div class="score-tabs" role="tablist">
+          <button type="button" class="score-tab active" id="tabAllTime" role="tab" aria-selected="true">All time</button>
+          <button type="button" class="score-tab" id="tabSession" role="tab" aria-selected="false">This session</button>
+        </div>
+        <button type="button" class="btn-danger-link" id="resetScoreBtn">Reset my score</button>
+      </div>
+
+      <!-- In-Page Confirm Dialog (No window.alert) -->
+      <div class="inpage-dialog hidden" id="resetConfirmDialog" role="alertdialog" aria-labelledby="confirmMsg">
+        <p id="confirmMsg">Reset your score and rank progress for this device?</p>
+        <div class="dialog-actions">
+          <button type="button" class="btn red sm" id="confirmResetBtn">Yes, reset</button>
+          <button type="button" class="btn sm" id="cancelResetBtn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Table Container -->
+      <div class="score-table-wrap">
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Emblem</th>
+              <th>Hunter</th>
+              <th>Rank Title</th>
+              <th>XP</th>
+              <th>Bingos</th>
+              <th>Best Combo</th>
+            </tr>
+          </thead>
+          <tbody id="scoreTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="score-footer">
+        <button type="button" class="btn red" id="returnGameBtn">Return to Hunt</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script>
+  if (typeof THREE === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"><\\/script>');
+  }
+</script>
+<script src="js/characters3d.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
